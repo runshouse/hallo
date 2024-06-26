@@ -153,7 +153,8 @@ def inference_process(args: argparse.Namespace):
     img_size = (config.data.source_image.width,
                 config.data.source_image.height)
     clip_length = config.data.n_sample_frames
-    face_analysis_model_path = config.face_analysis.model_path
+    # face_analysis_model_path = config.face_analysis.model_path
+    face_analysis_model_path = "content/inswapper_128.onnx"
     with ImageProcessor(img_size, face_analysis_model_path) as image_processor:
         source_image_pixels, \
         source_image_face_region, \
