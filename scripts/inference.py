@@ -46,6 +46,7 @@ from hallo.models.unet_2d_condition import UNet2DConditionModel
 from hallo.models.unet_3d import UNet3DConditionModel
 from hallo.utils.config import filter_non_none
 from hallo.utils.util import tensor_to_video
+import gc
 
 
 class Net(nn.Module):
@@ -139,6 +140,7 @@ def inference_process(args: argparse.Namespace):
     # 2. runtime variables
     device = torch.device(
         "cuda") if torch.cuda.is_available() else torch.device("cpu")
+    
     if config.weight_dtype == "fp16":
         weight_dtype = torch.float16
     elif config.weight_dtype == "bf16":
@@ -345,6 +347,8 @@ def inference_process(args: argparse.Namespace):
 
     output_file = config.output
     # save the result after all iteration
+    gc.collect()
+    torch.cuda.empty_cache()
     tensor_to_video(tensor_result, output_file, driving_audio_path)
     return output_file
 
