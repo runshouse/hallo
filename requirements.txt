@@ -22,7 +22,7 @@ opencv-python-headless==4.9.0.80
 opencv-python==4.9.0.80
 pillow==10.3.0
 setuptools==70.0.0
-torch==2.2.2+cu121
+
 torchvision==0.17.2+cu121
 tqdm==4.66.4
 transformers==4.39.2
