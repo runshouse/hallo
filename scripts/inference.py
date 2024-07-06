@@ -46,7 +46,7 @@ from hallo.models.unet_2d_condition import UNet2DConditionModel
 from hallo.models.unet_3d import UNet3DConditionModel
 from hallo.utils.config import filter_non_none
 from hallo.utils.util import tensor_to_video
-
+import gc
 
 class Net(nn.Module):
     """
@@ -290,6 +290,8 @@ def inference_process(args: argparse.Namespace):
 
     for t in range(times):
         print(f"[{t+1}/{times}]")
+        gc.collect()
+        torch.cuda.empty_cache()
 
         if len(tensor_result) == 0:
             # The first iteration
