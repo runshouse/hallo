@@ -46,7 +46,7 @@ from hallo.models.unet_2d_condition import UNet2DConditionModel
 from hallo.models.unet_3d import UNet3DConditionModel
 from hallo.utils.config import filter_non_none
 from hallo.utils.util import tensor_to_video
-import gc
+# import gc
 
 class Net(nn.Module):
     """
@@ -147,7 +147,7 @@ def inference_process(args: argparse.Namespace):
         weight_dtype = torch.float32
     else:
         weight_dtype = torch.float32
-
+    print("150")
     # 3. prepare inference data
     # 3.1 prepare source image, face mask, face embeddings
     img_size = (config.data.source_image.width,
@@ -162,7 +162,7 @@ def inference_process(args: argparse.Namespace):
         source_image_face_mask, \
         source_image_lip_mask = image_processor.preprocess(
             source_image_path, save_path, config.face_expand_ratio)
-
+    print("165")
     # 3.2 prepare audio embeddings
     sample_rate = config.data.driving_audio.sample_rate
     assert sample_rate == 16000, "audio sample rate must be 16000"
@@ -180,7 +180,7 @@ def inference_process(args: argparse.Namespace):
         os.path.join(save_path, "audio_preprocess")
     ) as audio_processor:
         audio_emb, audio_length = audio_processor.preprocess(driving_audio_path, clip_length)
-
+    print("183")
     # 4. build modules
     sched_kwargs = OmegaConf.to_container(config.noise_scheduler_kwargs)
     if config.enable_zero_snr:
@@ -191,7 +191,7 @@ def inference_process(args: argparse.Namespace):
         )
     val_noise_scheduler = DDIMScheduler(**sched_kwargs)
     sched_kwargs.update({"beta_schedule": "scaled_linear"})
-
+    print("194")
     vae = AutoencoderKL.from_pretrained(config.vae.model_path)
     reference_unet = UNet2DConditionModel.from_pretrained(
         config.base_model_path, subfolder="unet")
@@ -209,7 +209,7 @@ def inference_process(args: argparse.Namespace):
         clip_embeddings_dim=512,
         clip_extra_context_tokens=4,
     )
-
+    print("212")
     audio_proj = AudioProjModel(
         seq_len=5,
         blocks=12,  # use 12 layers' hidden states of wav2vec
@@ -218,7 +218,7 @@ def inference_process(args: argparse.Namespace):
         output_dim=768,
         context_tokens=32,
     ).to(device=device, dtype=weight_dtype)
-
+    print("221")
     audio_ckpt_dir = config.audio_ckpt_dir
 
 
@@ -290,8 +290,8 @@ def inference_process(args: argparse.Namespace):
 
     for t in range(times):
         print(f"[{t+1}/{times}]")
-        gc.collect()
-        torch.cuda.empty_cache()
+        # gc.collect()
+        # torch.cuda.empty_cache()
 
         if len(tensor_result) == 0:
             # The first iteration
