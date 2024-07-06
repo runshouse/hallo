@@ -748,12 +748,12 @@ class UNet3DConditionModel(ModelMixin, ConfigMixin):
         logger.info(
             f"loaded temporal unet's pretrained weights from {pretrained_model_path} ..."
         )
-
+        print("751")
         config_file = pretrained_model_path / "config.json"
         if not (config_file.exists() and config_file.is_file()):
             raise RuntimeError(
                 f"{config_file} does not exist or is not a file")
-
+        print("756")
         unet_config = cls.load_config(config_file)
         unet_config["_class_name"] = cls.__name__
         unet_config["down_block_types"] = [
@@ -772,7 +772,7 @@ class UNet3DConditionModel(ModelMixin, ConfigMixin):
         if use_landmark:
             unet_config["in_channels"] = 8
             unet_config["out_channels"] = 8
-
+        print("775")
         model = cls.from_config(unet_config, **unet_additional_kwargs)
         # load the vanilla weights
         if pretrained_model_path.joinpath(SAFETENSORS_WEIGHTS_NAME).exists():
@@ -782,7 +782,7 @@ class UNet3DConditionModel(ModelMixin, ConfigMixin):
             state_dict = load_file(
                 pretrained_model_path.joinpath(SAFETENSORS_WEIGHTS_NAME), device="cpu"
             )
-
+        print("785")
         elif pretrained_model_path.joinpath(WEIGHTS_NAME).exists():
             logger.debug(f"loading weights from {pretrained_model_path} ...")
             state_dict = torch.load(
@@ -793,7 +793,7 @@ class UNet3DConditionModel(ModelMixin, ConfigMixin):
         else:
             raise FileNotFoundError(
                 f"no weights file found in {pretrained_model_path}")
-
+        print("796")
         # load the motion module weights
         if motion_module_path.exists() and motion_module_path.is_file():
             if motion_module_path.suffix.lower() in [".pth", ".pt", ".ckpt"]:
@@ -820,7 +820,7 @@ class UNet3DConditionModel(ModelMixin, ConfigMixin):
 
             # merge the state dicts
             state_dict.update(motion_state_dict)
-
+        print("7823")
         model_state_dict = model.state_dict()
         for k in state_dict:
             if k in model_state_dict:
@@ -830,10 +830,10 @@ class UNet3DConditionModel(ModelMixin, ConfigMixin):
         m, u = model.load_state_dict(state_dict, strict=False)
         logger.debug(
             f"### missing keys: {len(m)}; \n### unexpected keys: {len(u)};")
-
+        print("833")
         params = [
             p.numel() if "temporal" in n else 0 for n, p in model.named_parameters()
         ]
         logger.info(f"Loaded {sum(params) / 1e6}M-parameter motion module")
-
+        print("838")
         return model
