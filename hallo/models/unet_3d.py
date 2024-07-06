@@ -794,6 +794,9 @@ class UNet3DConditionModel(ModelMixin, ConfigMixin):
             raise FileNotFoundError(
                 f"no weights file found in {pretrained_model_path}")
         print("796")
+        import gc
+        gc.collect()
+        torch.cuda.empty_cache()
         # load the motion module weights
         if motion_module_path.exists() and motion_module_path.is_file():
             if motion_module_path.suffix.lower() in [".pth", ".pt", ".ckpt"]:
@@ -802,6 +805,8 @@ class UNet3DConditionModel(ModelMixin, ConfigMixin):
                 motion_state_dict = torch.load(
                     motion_module_path, map_location="cpu", weights_only=True
                 )
+            gc.collect()
+            torch.cuda.empty_cache()
             elif motion_module_path.suffix.lower() == ".safetensors":
                 motion_state_dict = load_file(motion_module_path, device="cpu")
             else:
@@ -820,7 +825,7 @@ class UNet3DConditionModel(ModelMixin, ConfigMixin):
 
             # merge the state dicts
             state_dict.update(motion_state_dict)
-        print("7823")
+        print("823")
         model_state_dict = model.state_dict()
         for k in state_dict:
             if k in model_state_dict:
