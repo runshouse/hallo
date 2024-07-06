@@ -193,8 +193,10 @@ def inference_process(args: argparse.Namespace):
     sched_kwargs.update({"beta_schedule": "scaled_linear"})
     print("194")
     vae = AutoencoderKL.from_pretrained(config.vae.model_path)
+    print("196")
     reference_unet = UNet2DConditionModel.from_pretrained(
         config.base_model_path, subfolder="unet")
+    print("199")
     denoising_unet = UNet3DConditionModel.from_pretrained_2d(
         config.base_model_path,
         config.motion_module_path,
@@ -203,13 +205,15 @@ def inference_process(args: argparse.Namespace):
             config.unet_additional_kwargs),
         use_landmark=False,
     )
+    print("208")
     face_locator = FaceLocator(conditioning_embedding_channels=320)
+    print("210")
     image_proj = ImageProjModel(
         cross_attention_dim=denoising_unet.config.cross_attention_dim,
         clip_embeddings_dim=512,
         clip_extra_context_tokens=4,
     )
-    print("212")
+    print("216")
     audio_proj = AudioProjModel(
         seq_len=5,
         blocks=12,  # use 12 layers' hidden states of wav2vec
@@ -218,7 +222,7 @@ def inference_process(args: argparse.Namespace):
         output_dim=768,
         context_tokens=32,
     ).to(device=device, dtype=weight_dtype)
-    print("221")
+    print("225")
     audio_ckpt_dir = config.audio_ckpt_dir
 
 
